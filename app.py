@@ -242,13 +242,20 @@ def main():
     with st.sidebar:
         st.header(" Configuration")
         
-        # Gemini API Key
-        api_key = st.text_input("Gemini API Key", type="password")
-        
-        if not api_key:
-            st.warning("Please enter your Gemini API key to continue")
-            st.info("Get your API key from: [Google AI Studio](https://aistudio.google.com/app/apikey)")
-            st.stop()
+        # Gemini API Key - check environment first, then manual input
+        env_api_key = os.getenv("GEMINI_API_KEY") or st.secrets.get("GEMINI_API_KEY", "")
+
+        if env_api_key:
+            api_key = env_api_key
+            st.success("Using API key from environment")
+        else:
+            api_key = st.text_input("Gemini API Key", type="password")
+
+            if not api_key:
+                st.warning("Please enter your Gemini API key to continue")
+                st.info("Get your API key from: [Google AI Studio](https://aistudio.google.com/app/apikey)")
+                st.info("Or set GEMINI_API_KEY environment variable")
+                st.stop()
         
         # Configure Gemini
         try:
